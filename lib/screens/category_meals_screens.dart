@@ -14,6 +14,7 @@ class CategoryMealsScreen extends StatefulWidget {
 class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
   String? categoryTitle;
   late List<Meal> displayedMeals;
+  bool _loadedInitData = false;
 
   @override
   void initState() {
@@ -23,16 +24,21 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
   @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
-    final routeArgs =
-    ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    // ap dung trong InheritedWidget tuc la thang cha va thang con
+    // co quan he du lieu voi nhau, thang con thay doi thi bao lai
+    // cho thang cha biet da thay doi cai gi de update lai thang cha
+    if (!_loadedInitData) {
+      final routeArgs =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
-    final categoryId = routeArgs['id'];
-    categoryTitle = routeArgs['title'];
+      final categoryId = routeArgs['id'];
+      categoryTitle = routeArgs['title'];
 
-    displayedMeals = DUMMY_MEALS.where((meal) {
-      return meal.categories.contains(categoryId);
-    }).toList();
-
+      displayedMeals = DUMMY_MEALS.where((meal) {
+        return meal.categories.contains(categoryId);
+      }).toList();
+      _loadedInitData = true;
+    }
     super.didChangeDependencies();
   }
 
@@ -40,7 +46,6 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
     setState(() {
       displayedMeals.removeWhere((meal) => meal.id == mealId);
     });
-
   }
 
   @override
@@ -52,14 +57,13 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
         body: ListView.builder(
           itemBuilder: (ctx, index) {
             return MealItems(
-                id: displayedMeals[index].id,
-                title: displayedMeals[index].title,
-                imageUrl: displayedMeals[index].imageUrl,
-                duration: displayedMeals[index].duration,
-                complexity: displayedMeals[index].complexity,
-                affordability: displayedMeals[index].affordability,
-                removeItems: _removeMeal,
-
+              id: displayedMeals[index].id,
+              title: displayedMeals[index].title,
+              imageUrl: displayedMeals[index].imageUrl,
+              duration: displayedMeals[index].duration,
+              complexity: displayedMeals[index].complexity,
+              affordability: displayedMeals[index].affordability,
+              removeItems: _removeMeal,
             );
           },
           itemCount: displayedMeals.length,
