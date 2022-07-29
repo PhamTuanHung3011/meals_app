@@ -5,6 +5,12 @@ import '../component/main_drawer.dart';
 class FilterScreens extends StatefulWidget {
   static const idFilterScreens = 'filter-screens';
 
+  final Function saveFilters;
+  final Map<String, bool> currentFilters;
+
+
+  FilterScreens(this.currentFilters, this.saveFilters);
+
   @override
   State<FilterScreens> createState() => _FilterScreensState();
 }
@@ -19,7 +25,7 @@ class _FilterScreensState extends State<FilterScreens> {
     String text,
     String description,
     bool currentValue,
-      Function(bool)? updateValue,
+    Function(bool)? updateValue,
   ) {
     return SwitchListTile(
       title: Text(text),
@@ -30,11 +36,35 @@ class _FilterScreensState extends State<FilterScreens> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    _glutenFree = widget.currentFilters['gluten']!;
+    _veganFree = widget.currentFilters['vegan']!;
+    _vegetarianFree = widget.currentFilters['vegetarian']!;
+    _lactoseFree = widget.currentFilters['lactose']!;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("FilterScreens"),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                final selectFilters = {
+                  'gluten': _glutenFree,
+                  'vegan': _veganFree,
+                  'vegetarian': _vegetarianFree,
+                  'lactose': _lactoseFree,
+                };
+                widget.saveFilters(selectFilters);
+              },
+              icon: Icon(Icons.save)),
+        ],
       ),
+      drawer: MainDrawer(),
       // drawer: MainDrawer(),
       body: Column(
         children: <Widget>[
@@ -51,22 +81,28 @@ class _FilterScreensState extends State<FilterScreens> {
           Expanded(
               child: ListView(
             children: <Widget>[
-              _SwitchList('GlutenFree', 'Only include gluten -free meals', _glutenFree, (bool newValue) {
+              _SwitchList(
+                  'GlutenFree', 'Only include gluten -free meals', _glutenFree,
+                  (bool newValue) {
                 setState(() {
                   _glutenFree = newValue;
                 });
               }),
-              _SwitchList('Lactose', 'Only include lactose -free meals', _lactoseFree, (newValue) {
+              _SwitchList(
+                  'Lactose', 'Only include lactose -free meals', _lactoseFree,
+                  (newValue) {
                 setState(() {
                   _lactoseFree = newValue;
                 });
               }),
-              _SwitchList('VeganFree', 'Tot cho suc khoe', _veganFree, (newValue) {
+              _SwitchList('VeganFree', 'Tot cho suc khoe', _veganFree,
+                  (newValue) {
                 setState(() {
                   _veganFree = newValue;
                 });
               }),
-              _SwitchList('Vegetables', 'Only include vegetables -free meals', _vegetarianFree, (newValue) {
+              _SwitchList('Vegetables', 'Only include vegetables -free meals',
+                  _vegetarianFree, (newValue) {
                 setState(() {
                   _vegetarianFree = newValue;
                 });
